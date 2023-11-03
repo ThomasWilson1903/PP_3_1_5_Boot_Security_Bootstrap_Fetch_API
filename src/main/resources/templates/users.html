@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div>
+    <table>
+        <thead>
+        <tr>
+            <th>Email</th>
+            <th>Username</th>
+            <th>Password</th>
+            <th>Name</th>
+            <th>Lastname</th>
+            <th>fun</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user : ${user}">
+            <td th:text="${user.email}"></td>
+            <td th:text="${user.username}"></td>
+            <td th:text="${user.password}"></td>
+            <td th:text="${user.firstName}"></td>
+            <td th:text="${user.lastName}"></td>
+            <td>
+                <form th:action="@{/user/del}" method="get">
+                    <input type="hidden" name="id" th:value="${user.id}"/>
+                    <button type="submit">Delete</button>
+                </form>
+            </td>
+
+        </tr>
+        </tbody>
+    </table>
+
+</div>
+<br>
+<input type="button" value="Add"
+       onclick="window.location.href = '/user/new'"/>
+</body>
+</html>

@@ -5,8 +5,10 @@
     <title>Title</title>
 </head>
 <body>
+<a href="/logout">Выйти</a>
+
 <br>
-<form th:method="get" th:action="@{/user/save}" th:object="${newUser}">
+<form th:method="get" th:action="@{/admin/save}" th:object="${newUser}">
 
   <input type="hidden" th:field="*{id}"/>
 
@@ -17,13 +19,13 @@
   <input type="text" th:field="*{lastName}" id="surname"/>
   <br><br>
   <label for="email">Email: </label>
-  <input type="text" th:field="*{email}" id="email"/>
+  <input type="email" th:field="*{email}" id="email"/>
   <br><br>
   <label for="username">Username: </label>
   <input type="text" th:field="*{username}" id="username"/>
   <br><br>
   <label for="password">Password: </label>
-  <input type="text" th:field="*{password}" id="password"/>
+  <input type="password" th:field="*{password}" id="password"/>
   <br><br>
   <input type="submit" value="OK"/>
 </form>

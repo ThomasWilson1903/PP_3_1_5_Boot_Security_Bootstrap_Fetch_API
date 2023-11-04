@@ -31,10 +31,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers("/user/**").authenticated()
+                .antMatchers("/admin/**").hasRole("ADMIN")
                 .and()
                 .formLogin()
                 .and()
-                .logout().logoutSuccessUrl("/");
+                .formLogin().permitAll();
     }
     /*@Bean //In memory
     public UserDetailsService userDetailsService(){

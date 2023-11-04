@@ -5,6 +5,10 @@
     <title>Title</title>
 </head>
 <body>
+
+
+<a href="/logout">Выйти</a>
+
 <div>
     <table>
         <thead>
@@ -25,7 +29,7 @@
             <td th:text="${user.firstName}"></td>
             <td th:text="${user.lastName}"></td>
             <td>
-                <form th:action="@{/user/del}" method="get">
+                <form th:action="@{/admin/del}" method="get">
                     <input type="hidden" name="id" th:value="${user.id}"/>
                     <button type="submit">Delete</button>
                 </form>
@@ -38,6 +42,6 @@
 </div>
 <br>
 <input type="button" value="Add"
-       onclick="window.location.href = '/user/new'"/>
+       onclick="window.location.href = '/admin/new'"/>
 </body>
 </html>

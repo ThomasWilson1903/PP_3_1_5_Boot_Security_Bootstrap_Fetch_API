@@ -13,34 +13,9 @@ public class UserController {
 
     @Autowired
     UserServices userServices;
-
-
-    @GetMapping()
-    public String show(Model model) {
-        model.addAttribute("user", userServices.getAllUsers());
-        return "users";
+    @GetMapping("/profile")
+    public String showId() {
+        return "profileUser";
     }
 
-    @GetMapping("/{id}")
-    public User showId(@PathVariable("id") int id) {
-        return userServices.getUser(id);
-    }
-
-    @GetMapping ("/new")
-    public String newUser(Model model) {
-        model.addAttribute("newUser", new User());
-        return "newUser";
-    }
-
-    @GetMapping("/save")
-    public String saveUser(@ModelAttribute("user") User user) {
-        userServices.saveUser(user);
-        return "redirect:/user";
-    }
-
-    @GetMapping("/del")
-    public String del(@RequestParam("id") int id) {
-        userServices.deleteUser(id);
-        return "redirect:/user";
-    }
 }

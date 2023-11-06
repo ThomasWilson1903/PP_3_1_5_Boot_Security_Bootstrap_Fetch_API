@@ -8,8 +8,19 @@
 <a href="/logout">Выйти</a>
 
 <h1>
-  Profile
+    Profile
 </h1>
+<p>
+    <td th:text="${user.username}"></td>
+    <p/>
+    <td th:text="${user.password}"></td>
+    <p/>
+    <td th:text="${user.firstName}"></td>
+    <p/>
+    <td th:text="${user.lastName}"></td>
+    <p/>
+    <td th:text="${user.email}"></td>
+</p>
 
 </body>
 </html>

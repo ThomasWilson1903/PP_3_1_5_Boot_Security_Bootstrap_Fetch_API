@@ -5,12 +5,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
-import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.services.UserServices;
-
-import java.util.List;
 
 @Controller
 @RequestMapping("/admin")
@@ -29,11 +25,13 @@ public class AdminController {
     public User showId(@PathVariable("id") int id) {
         return userServices.getUser(id);
     }
+
     @GetMapping("/users")
     public String show(Model model) {
         model.addAttribute("user", userServices.getAllUsers());
         return "users";
     }
+
     @GetMapping("/new")
     public String newUser(Model model) {
         model.addAttribute("newUser", new User());

@@ -4,9 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.services.UserServices;
+
+import javax.validation.Valid;
 
 @Controller
 @RequestMapping("/admin")
@@ -39,10 +42,21 @@ public class AdminController {
     }
 
     @GetMapping("/save")
-    public String saveUser(@ModelAttribute("newUser") User user) {
+    public String saveUser(@Valid User user, BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("newUser", user);
+            model.addAttribute("errors", bindingResult.getFieldErrors());
+            return "newUser";
+        }
         user.setPassword(customPasswordEncoder.encode(user.getPassword()));
         userServices.saveUser(user);
+
         return "redirect:/admin/users";
+    }
+    @GetMapping("/edit")
+    public String editUser(@ModelAttribute("id") int userId, Model model) {
+        model.addAttribute("newUser", userServices.getUser(userId));
+        return "newUser";
     }
 
     @GetMapping("/del")

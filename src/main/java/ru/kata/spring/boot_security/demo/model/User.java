@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.util.ArrayList;
@@ -22,25 +23,25 @@ public class User {
     private int id;
 
     @Column(name = "username", length = 255)
-    @NotNull
+    @NotEmpty(message = "not NULL")
     private String username;
 
     @Column(name = "password", length = 255)
-    @NotNull
+    @NotEmpty(message = "not NULL")
     private String password;
 
     @Column(name = "name", length = 255)
     @Pattern(regexp = "^[a-zA-Z]+$", message = "error firstName")
-    @NotNull
+    @NotEmpty(message = "not NULL")
     private String firstName;
 
     @Column(name = "last_name", length = 255)
     @Pattern(regexp = "^[a-zA-Z]+$", message = "error lastName")
-    @NotNull
+    @NotEmpty(message = "not NULL")
     private String lastName;
 
     @Column(name = "email", length = 255)
-    @NotNull
+    @NotEmpty(message = "not NULL")
     @Email(message = "error e-mail")
     private String email;
 

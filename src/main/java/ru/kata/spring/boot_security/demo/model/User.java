@@ -1,13 +1,18 @@
 package ru.kata.spring.boot_security.demo.model;
 
 
+import org.springframework.transaction.annotation.Transactional;
+
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 @Entity
+@Transactional
 @Table(name = "users")
 public class User {
 
@@ -40,12 +45,11 @@ public class User {
     private String email;
 
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "users_roles",
-    joinColumns = @JoinColumn(name = "user_id"),
-    inverseJoinColumns = @JoinColumn(name = "role_id"))
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Collection<Role> roles;
-
 
 
     public User() {
@@ -55,6 +59,13 @@ public class User {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
+    }
+
+    public void addRoleUser(Role role) {
+        if (roles == null) {
+            roles = new ArrayList<>();
+        }
+        roles.add(role);
     }
 
     public Collection<Role> getRoles() {
@@ -89,6 +100,19 @@ public class User {
                 ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return id == user.id && Objects.equals(username, user.username) && Objects.equals(password, user.password) && Objects.equals(firstName, user.firstName) && Objects.equals(lastName, user.lastName) && Objects.equals(email, user.email) && Objects.equals(roles, user.roles);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, username, password, firstName, lastName, email, roles);
     }
 
     public int getId() {

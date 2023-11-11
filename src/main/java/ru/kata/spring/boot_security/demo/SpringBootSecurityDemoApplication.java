@@ -1,36 +1,15 @@
 package ru.kata.spring.boot_security.demo;
 
-import org.hibernate.Session;
-import org.hibernate.engine.spi.SessionDelegatorBaseImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
-import ru.kata.spring.boot_security.demo.dao.RoleDao;
-import ru.kata.spring.boot_security.demo.dao.UserDaoImpl;
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.repositories.RoleRepositories;
 import ru.kata.spring.boot_security.demo.repositories.UserRepositories;
 import ru.kata.spring.boot_security.demo.services.UserServices;
-import ru.kata.spring.boot_security.demo.services.UserServicesImpl;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.annotation.PostConstruct;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 
 @SpringBootApplication
 public class SpringBootSecurityDemoApplication {
@@ -55,7 +34,7 @@ public class SpringBootSecurityDemoApplication {
 
     @PostConstruct
     @Transactional
-    public void init() throws SQLException, IOException {
+    public void init() {
 
         try {
             User userAdmin = new User();

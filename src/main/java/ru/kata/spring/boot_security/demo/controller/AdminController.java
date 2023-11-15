@@ -14,6 +14,7 @@ import ru.kata.spring.boot_security.demo.services.UserServices;
 
 import javax.validation.Valid;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -40,7 +41,8 @@ public class AdminController {
 
     @GetMapping("/users")
     public String show(Model model, Principal principal) {
-        model.addAttribute("users", userServices.getAllUsers());
+        model.addAttribute("users", userRepositories.findAll());
+        model.addAttribute("allRoles", roleRepositories.findAll());
         model.addAttribute("userEnter", userRepositories.findByUsername(principal.getName()));
         return "admin/adminPage";
     }
@@ -81,17 +83,32 @@ public class AdminController {
         return "redirect:/admin/users";
     }
 
-    @GetMapping("/edit")
-    public String editUser(@ModelAttribute("id") int userId, Model model) {
+    /*@PatchMapping("/edit/{id}")
+    public String editUser(@PathVariable("id") int userId, Model model) {
         model.addAttribute("newUser", userServices.getUser(userId));
 
         List<Role> roles = roleRepositories.findAll();
         model.addAttribute("allRoles", roles);
-        return "newUser";
+        return "redirect:/admin/users";
+    }*/
+
+    @PostMapping(value = "/edit/{id}")
+    public String updateUser(@ModelAttribute("user") @Valid User user, BindingResult bindingResult,
+                             @RequestParam(value = "roles") int[] selectResult) {
+        if (!bindingResult.hasErrors()) {
+            List<Role> roles = new ArrayList<>();
+            for (int s : selectResult) {
+                roles.add(roleRepositories.getReferenceById(s));
+            }
+            user.setRoles(roles);
+            user.setPassword(userRepositories.findByUsername(user.getUsername()).getPassword());
+            userServices.saveUser(user);
+        }
+        return "redirect:/admin/users";
     }
 
-    @GetMapping("/del")
-    public String del(@RequestParam("id") int id) {
+    @PostMapping("/del/{id}")
+    public String del(@PathVariable("id") int id) {
         userServices.deleteUser(id);
         return "redirect:/admin/users";
     }

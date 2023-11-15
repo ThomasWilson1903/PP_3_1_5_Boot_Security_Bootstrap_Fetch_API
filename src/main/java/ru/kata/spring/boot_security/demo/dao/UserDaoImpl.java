@@ -5,17 +5,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.model.User;
+import ru.kata.spring.boot_security.demo.repositories.UserRepositories;
 
 import javax.persistence.EntityManager;
 import java.util.List;
 
 @Repository
+@Transactional
 public class UserDaoImpl implements UserDao {
     private EntityManager entityManagers;
 
+    UserRepositories userRepositories;
+
     @Autowired
-    public UserDaoImpl(EntityManager entityManagers) {
+    public UserDaoImpl(EntityManager entityManagers, UserRepositories userRepositories) {
         this.entityManagers = entityManagers;
+        this.userRepositories = userRepositories;
     }
 
     @Override
@@ -31,17 +36,14 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    @Transactional
     public void saveUser(User user) {
         Session session = entityManagers.unwrap(Session.class);
         session.merge(user);
         session.flush();
     }
 
-    @Transactional
     @Override
     public void deleteUser(int id) {
-        Session session = entityManagers.unwrap(Session.class);
-        session.remove(entityManagers.find(User.class, id));
+        userRepositories.delete(new User(id));
     }
 }

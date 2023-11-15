@@ -27,7 +27,6 @@ public class User {
     private String username;
 
     @Column(name = "password", length = 255)
-    @NotEmpty(message = "not NULL")
     private String password;
 
     @Column(name = "name", length = 255)
@@ -54,6 +53,10 @@ public class User {
 
 
     public User() {
+    }
+
+    public User(int id) {
+        this.id = id;
     }
 
     public User(String firstName, String lastName, String email) {

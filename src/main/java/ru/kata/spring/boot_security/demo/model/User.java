@@ -69,6 +69,15 @@ public class User {
         roles.add(role);
     }
 
+    public String getRolesToString() {
+        String string = "";
+        for (Role role :
+                roles) {
+            string = string + role.getName() + " ";
+        }
+        return string;
+    }
+
     public Collection<Role> getRoles() {
         return roles;
     }

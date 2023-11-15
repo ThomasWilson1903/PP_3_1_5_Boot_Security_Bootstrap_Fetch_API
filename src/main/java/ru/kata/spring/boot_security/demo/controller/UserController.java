@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.kata.spring.boot_security.demo.model.User;
+import ru.kata.spring.boot_security.demo.repositories.UserRepositories;
 import ru.kata.spring.boot_security.demo.services.UserServices;
 
 import java.security.Principal;
@@ -15,16 +16,21 @@ import java.util.stream.Collectors;
 @RequestMapping("/user")
 public class UserController {
 
-    @Autowired
     UserServices userServices;
+    UserRepositories userRepositories;
+
+    @Autowired
+    public UserController(UserServices userServices, UserRepositories userRepositories) {
+        this.userServices = userServices;
+        this.userRepositories = userRepositories;
+    }
 
     @GetMapping("/profile")
     public String showId(Principal principal, Model model) {
-        List<User> users = userServices.getAllUsers();
-        users.stream().filter(s -> s.getUsername().equals(principal.getName()))
-                .collect(Collectors.toList());
-        model.addAttribute("user", users.get(0));
-        return "profileUser";
+        model.addAttribute("users", userServices.getAllUsers());
+        model.addAttribute("userEnter", userRepositories.findByUsername(principal.getName()));
+        return "user/userPage";
     }
+
 
 }

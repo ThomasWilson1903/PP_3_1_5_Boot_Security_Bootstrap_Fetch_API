@@ -1,5 +1,8 @@
 const url = 'http://localhost:8080/rest/users'
 let jsonData
+var dwqdq
+let dwqd = {}
+
 let table = document.getElementById("table");
 var tableHeader = table.createTHead();
 var headerRow = tableHeader.insertRow();

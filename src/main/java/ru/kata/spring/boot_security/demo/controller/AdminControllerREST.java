@@ -1,6 +1,9 @@
 package ru.kata.spring.boot_security.demo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -33,7 +36,7 @@ public class AdminControllerREST {
         this.userRepositories = userRepositories;
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/users/{id}")
     public User showId(@PathVariable("id") int id) {
         return userServices.getUser(id);
     }
@@ -44,31 +47,19 @@ public class AdminControllerREST {
         return userRepositories.findAll();
     }
 
-    //profile
-    @GetMapping("/profile")
-    public User showUserProfile(Model model, Principal principal) {
-        return userRepositories.findByUsername(principal.getName());
+    @GetMapping("/roles")
+    public List<Role> showRoles() {
+        return roleRepositories.findAll();
     }
 
-    @GetMapping("/save")
-    public String saveUser(@ModelAttribute("user") @Valid User user, BindingResult bindingResult,
-                           Principal principal, Model model) {
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("newUser", user);
-            List<Role> roles = roleRepositories.findAll();
-            model.addAttribute("allRoles", roles);
-            model.addAttribute("errors", bindingResult.getFieldErrors());
-            model.addAttribute("userEnter", userRepositories.findByUsername(principal.getName()));
-            return "admin/newUser";
-        }
-        user.setPassword(customPasswordEncoder.encode(user.getPassword()));
+    @PostMapping("/save")
+    public User saveNewUser(@RequestBody User user) {
         userServices.saveUser(user);
-
-
-        return "redirect:/admin/users";
+        return user;
     }
 
-    @PostMapping(value = "/edit/{id}")
+
+   /* @PostMapping(value = "/edit/{id}")
     public String updateUser(@ModelAttribute("user") @Valid User user, BindingResult bindingResult,
                              @RequestParam(value = "roles") int[] selectResult) {
         if (!bindingResult.hasErrors()) {
@@ -81,7 +72,7 @@ public class AdminControllerREST {
             userServices.saveUser(user);
         }
         return "redirect:/admin/users";
-    }
+    }*/
 
     @PostMapping("/del/{id}")
     public String del(@PathVariable("id") int id) {

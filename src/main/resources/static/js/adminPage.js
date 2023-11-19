@@ -5,6 +5,8 @@ jQuery(async function () {
     // addNewUser();
     await openProfile()
     await openAdminPage()
+    await openUsersPage()
+    await openNewUserPage()
 })
 
 const Service = {
@@ -15,10 +17,11 @@ const Service = {
     },
     // bodyAdd : async function(user) {return {'method': 'POST', 'headers': this.head, 'body': user}},
     findAllUsers: async () => await fetch('/rest/users'),
-    findOneUser: async () => await fetch('/rest/profile')
-    /*findOneUser: async (id) => await fetch(`rest/users/${id}`),
+    findOneUserProfile: async () => await fetch('/rest/profile'),
+    getAllRoles: async () => await fetch('/rest/roles'),
+    findOneUser: async (id) => await fetch(`/rest/users/${id}`),
     addNewUser: async (user) => await fetch('rest/users', {method: 'POST', headers: userFetchService.head, body: JSON.stringify(user)}),
-    updateUser: async (user, id) => await fetch(`rest/users/${id}`, {method: 'PUT', headers: userFetchService.head, body: JSON.stringify(user)}),
+    /*updateUser: async (user, id) => await fetch(`rest/users/${id}`, {method: 'PUT', headers: userFetchService.head, body: JSON.stringify(user)}),
     deleteUser: async (id) => await fetch(`rest/users/${id}`, {method: 'DELETE', headers: userFetchService.head})*/
 }
 
@@ -48,12 +51,12 @@ async function getTableWithUsers() {
                             <td>${user.email}</td>
                             <td>${user.rolesToString}</td>     
                             <td>
-                                <button type="button" data-userid="${user.id}" data-action="edit" class="btn btn-outline-secondary" 
-                                data-toggle="modal" data-target="#someDefaultModal"></button>
+                                <button type="button" data-userid="${user.id}" data-action="edit" class="btn btn-primary link-light" 
+                                data-toggle="modal" data-target="#someDefaultModal">Edit</button>
                             </td>
                             <td>
-                                <button type="button" data-userid="${user.id}" data-action="delete" class="btn btn-outline-danger" 
-                                data-toggle="modal" data-target="#someDefaultModal"></button>
+                                <button type="button" data-userid="${user.id}" data-action="delete" class="btn btn-danger" 
+                                data-toggle="modal" data-target="#someDefaultModal">Del</button>
                             </td>
                         </tr>`;
                 table.append(tableFilling);
@@ -71,7 +74,9 @@ async function getTableWithUsers() {
         let buttonAction = targetButton.attr('data-action');
 
         defaultModal.attr('data-userid', buttonUserId);
+        console.log(buttonUserId)
         defaultModal.attr('data-action', buttonAction);
+        console.log(buttonAction)
         defaultModal.modal('show');
     })
 }
@@ -103,9 +108,9 @@ async function getDefaultModal() {
 
 // редактируем юзера из модалки редактирования, забираем данные, отправляем
 async function editUser(modal, id) {
-    let preuser = await userFetchService.findOneUser(id);
+    let preuser = await Service.findOneUser(id);
     let user = preuser.json();
-
+    console.log(user)
     modal.find('.modal-title').html('Edit user');
 
     let editButton = `<button  class="btn btn-outline-success" id="editButton">Edit</button>`;
@@ -154,7 +159,6 @@ async function editUser(modal, id) {
     })
 }
 
-
 // удаляем юзера из модалки удаления
 async function deleteUser(modal, id) {
     await Service.deleteUser(id);
@@ -170,7 +174,7 @@ async function openProfile() {
 
             console.log('openUserPage')
 
-            await Service.findOneUser()
+            await Service.findOneUserProfile()
 
                 .then(res => res.json())
                 .then(user =>
@@ -242,8 +246,81 @@ async function openAdminPage() {
     )
 }
 
+async function openNewUserPage() {
+    $('#btnOpenNewUser').on("click", function () {
+        console.log('openNewUserPage')
 
+        $('#cards').empty().append(
+            `
+                    <div class="card">
+                        <div class="card-header">
+                            <h4><strong>Add new user</strong></h4>
+                        </div>
+                    </div>
+                    <div class="col-md bg-white border">
+                        <form
+                        class="offset-md-4 col-md-4 mt-1 mb-1">
+                            <label for="name">Name: </label>
+                            <input type="text"  id="name"/>
+                            <br><br>
+                            <label for="surname">Surname: </label>
+                            <input type="text"  id="surname"/>
+                            <br><br>
+                            <label for="email">Email: </label>
+                            <input type="email"  id="email"/>
+                            <br><br>
+                            <label for="username">Username: </label>
+                            <input type="text"  id="username"/>
+                            <br><br>
+                            <label for="password">Password: </label>
+                            <input type="password"  id="password"/>
+                            <br><br>
 
+                            <p>
+                                <label id="labelRole" >Roles:
+                                </label>
+                            </p>
+                            <br/>
+                            <input class="btn btn-success" type="submit" value="OK"/>
+                        </form>
+                    </div>
+`)
+        Service.getAllRoles()
+            .then(res => res.json())
+            .then(allRoles => allRoles.forEach(role => {
+                        let roles = `
+                              <div>
+                                <input type="checkbox" id="roles${role.id}" name="roles" />
+                                <label for="roles${role.id}">${role.name}</label>
+                              </div>
+                        `
+                        $('#labelRole').append(roles);
+                    }
+                )
+            )
+    })
+}
+
+async function openUsersPage() {
+    $('#btnOpenUsers').on("click", function () {
+        console.log('openPageUsers')
+        $('#cards').empty().append(
+            `
+            <div class="card-header">
+                <h4><strong>All users</strong></h4>
+            </div>
+            <div class="card-body">
+                <table id="mainTable" class="table table-striped table-hover">
+                    <tr>
+
+                    </tr>
+                </table>
+            </div>
+`
+        )
+        getTableWithUsers()
+    })
+}
 
 
 

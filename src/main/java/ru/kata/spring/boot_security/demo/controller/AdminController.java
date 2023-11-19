@@ -48,6 +48,7 @@ public class AdminController {
     }
 
     //profile
+    /*
     @GetMapping("/profile")
     public String showUserProfile(Model model, Principal principal) {
         model.addAttribute("users", userServices.getAllUsers());
@@ -83,14 +84,14 @@ public class AdminController {
         return "redirect:/admin/users";
     }
 
-    /*@PatchMapping("/edit/{id}")
+    *//*@PatchMapping("/edit/{id}")
     public String editUser(@PathVariable("id") int userId, Model model) {
         model.addAttribute("newUser", userServices.getUser(userId));
 
         List<Role> roles = roleRepositories.findAll();
         model.addAttribute("allRoles", roles);
         return "redirect:/admin/users";
-    }*/
+    }*//*
 
     @PostMapping(value = "/edit/{id}")
     public String updateUser(@ModelAttribute("user") @Valid User user, BindingResult bindingResult,
@@ -111,7 +112,7 @@ public class AdminController {
     public String del(@PathVariable("id") int id) {
         userServices.deleteUser(id);
         return "redirect:/admin/users";
-    }
+    }*/
 }
 
 

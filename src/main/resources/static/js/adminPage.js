@@ -3,11 +3,28 @@ jQuery(async function () {
     //getNewUserForm();
     await getDefaultModal();
     // addNewUser();
-    await openProfile()
-    await openAdminPage()
-    await openUsersPage()
-    await openNewUserPage()
+    await openProfile();
+    await openAdminPage();
+    await openUsersPage();
+    await openNewUserPage();
 })
+
+const csrfToken = 'Idea-dd34861c=5fb43fc0-1b04-49e6-b284-b5dbbb6de4c9';
+
+function getCookie(name) {
+    if (!document.cookie) {
+        return null;
+    }
+
+    const xsrfCookies = document.cookie.split(';')
+        .map(c => c.trim())
+        .filter(c => c.startsWith(name + '='));
+
+    if (xsrfCookies.length === 0) {
+        return null;
+    }
+    return decodeURIComponent(xsrfCookies[0].split('=')[1]);
+}
 
 const Service = {
     head: {
@@ -15,12 +32,17 @@ const Service = {
         'Content-Type': 'application/json',
         'Referer': null
     },
-    // bodyAdd : async function(user) {return {'method': 'POST', 'headers': this.head, 'body': user}},
+
+
     findAllUsers: async () => await fetch('/rest/users'),
     findOneUserProfile: async () => await fetch('/rest/profile'),
     getAllRoles: async () => await fetch('/rest/roles'),
     findOneUser: async (id) => await fetch(`/rest/users/${id}`),
-    addNewUser: async (user) => await fetch('rest/users', {method: 'POST', headers: userFetchService.head, body: JSON.stringify(user)}),
+    addNewUser: async (user) => await fetch('/rest/save', {
+        method: 'POST',
+        headers: Service.head,
+        body: JSON.stringify(user)
+    }),
     /*updateUser: async (user, id) => await fetch(`rest/users/${id}`, {method: 'PUT', headers: userFetchService.head, body: JSON.stringify(user)}),
     deleteUser: async (id) => await fetch(`rest/users/${id}`, {method: 'DELETE', headers: userFetchService.head})*/
 }
@@ -28,7 +50,8 @@ const Service = {
 async function getTableWithUsers() {
     let table = $('#mainTable tbody');
     table.empty();
-    table.append(`<tr>
+    table.append(`
+<tr>
                                     <th scope="col">ID</th>
                                     <th scope="col">Name</th>
                                     <th scope="col">Surname</th>
@@ -223,8 +246,9 @@ async function openAdminPage() {
                     <h1 class="m-3 fw-bold">Admin panel</h1>
                     <div class="tab-content" id="tabContent">
                         <ul class="nav nav-tabs">
-                            <a class="nav-link active" data-toggle="tab">Users Table</a>
-                            <a class="nav-link" data-toggle="tab" th:href="@{/admin/new}">New User</a>
+                            <a id="btnOpenUsers" class="nav-link active" data-toggle="tab">Users Table</a>
+                            <a id="btnOpenNewUser" class="nav-link" data-toggle="tab" th:href="@{/admin/new}">New
+                                User</a>
                         </ul>
                         <div class="card">
                             <div class="card-header">
@@ -247,18 +271,22 @@ async function openAdminPage() {
 }
 
 async function openNewUserPage() {
-    $('#btnOpenNewUser').on("click", function () {
+
+    $('#btnOpenNewUser').on("click", async function () {
         console.log('openNewUserPage')
 
         $('#cards').empty().append(
             `
+<div>
+                            
+                        </div>
                     <div class="card">
                         <div class="card-header">
                             <h4><strong>Add new user</strong></h4>
                         </div>
                     </div>
                     <div class="col-md bg-white border">
-                        <form
+                        <form id="NewUserForm"
                         class="offset-md-4 col-md-4 mt-1 mb-1">
                             <label for="name">Name: </label>
                             <input type="text"  id="name"/>
@@ -281,8 +309,9 @@ async function openNewUserPage() {
                                 </label>
                             </p>
                             <br/>
-                            <input class="btn btn-success" type="submit" value="OK"/>
                         </form>
+                        <p id="error">  </p>
+                    <a id="btnOkSaveUser" class="btn btn-primary w-100 border-0">Admin</a>
                     </div>
 `)
         Service.getAllRoles()
@@ -290,14 +319,15 @@ async function openNewUserPage() {
             .then(allRoles => allRoles.forEach(role => {
                         let roles = `
                               <div>
-                                <input type="checkbox" id="roles${role.id}" name="roles" />
-                                <label for="roles${role.id}">${role.name}</label>
+                                <input type="checkbox" id="role${role.id}" name="roles" />
+                                <label for="role${role.id}">${role.name}</label>
                               </div>
                         `
                         $('#labelRole').append(roles);
                     }
                 )
             )
+        await saveNewUser();
     })
 }
 
@@ -321,6 +351,116 @@ async function openUsersPage() {
         getTableWithUsers()
     })
 }
+
+async function saveNewUser() {
+    $("#btnOkSaveUser").click(function () {
+        let addUserForm = $('#NewUserForm')
+        /* let login = addUserForm.find('#').val().trim();
+         let password = addUserForm.find('#AddNewUserPassword').val().trim();
+         let age = addUserForm.find('#AddNewUserAge').val().trim();*/
+        //console.log(userName)
+        let data =
+            {
+                username: addUserForm.find($('#username')).val().trim(),
+                password: addUserForm.find($('#password')).val().trim(),
+                firstName: addUserForm.find($('#name')).val().trim(),
+                lastName: addUserForm.find($('#surname')).val().trim(),
+                email: addUserForm.find($('#email')).val().trim(),
+                roles: []
+            }
+        let coin = 0
+        Service.getAllRoles()
+            .then(res => res.json())
+            .then(allRoles => allRoles.forEach(val => {
+                    let checkbox = 'role' + val.id
+                    console.log(checkbox)
+                    if (document.getElementById(checkbox).checked) {
+                        data.roles.push({
+                            id: val.id,
+                            name: val.name
+                        })
+                    }
+                    coin++
+                    if (coin === allRoles.length) {
+                        Service.addNewUser(data)
+                            .then(() => {
+                                $('#cards').empty().append(`
+      <div class="card-header">
+        <h4><strong>All users</strong></h4>
+      </div>
+      <div class="card-body">
+        <table id="mainTable" class="table table-striped table-hover">
+          <tr>
+            ...
+          </tr>
+        </table>
+      </div>
+    `);
+                            })
+                            .then(() => getTableWithUsers());
+                    }
+                })
+            )
+        console.log(data)
+
+        /*try {
+             // Вызывайте сервисную функцию для добавления нового пользователя
+
+            $('#cards').empty().append(
+                `
+            <div class="card-header">
+                <h4><strong>All users</strong></h4>
+            </div>
+            <div class="card-body">
+                <table id="mainTable" class="table table-striped table-hover">
+                    <tr>
+
+                    </tr>
+                </table>
+            </div>
+`
+            )
+            getTableWithUsers()
+            // Если выполнение вернулося без ошибок, выполните функцию getTableWithUsers()
+            getTableWithUsers();
+        } catch (error) {
+            // Если произошла ошибка, выполните необходимые действия
+            console.error("Произошла ошибка при добавлении пользователя:", error);
+        }
+        console.log('openPageUsers')*/
+
+    });
+}
+
+//let id = modal.find("#id").val().trim();
+//let id1 = $('#name')
+
+//console.log(id1)
+/*let login = modal.find("#login").val().trim();
+let password = modal.find("#password").val().trim();
+let age = modal.find("#age").val().trim();
+let data = {
+    id: id,
+    login: login,
+    password: password,
+    age: age
+}
+const response = await userFetchService.updateUser(data, id);
+
+if (response.ok) {
+    getTableWithUsers();
+    modal.modal('hide');
+} else {
+    let body = await response.json();
+    let alert = `<div class="alert alert-danger alert-dismissible fade show col-12" role="alert" id="sharaBaraMessageError">
+                    ${body.info}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>`;
+    modal.find('.modal-body').prepend(alert);*/
+
+
 
 
 

@@ -1,5 +1,6 @@
 package ru.kata.spring.boot_security.demo.controller;
 
+import org.hibernate.mapping.Any;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -54,8 +55,14 @@ public class AdminControllerREST {
 
     @PostMapping("/save")
     public User saveNewUser(@RequestBody User user) {
+        user.setPassword(customPasswordEncoder.encode(user.getPassword()));
+        List<Role> roles = new ArrayList<>();
+        for (Role role : user.getRoles()) {
+            roles.add(roleRepositories.findById(role.getId()).orElse(null));
+        }
+        user.setRoles(roles);
         userServices.saveUser(user);
-        return user;
+        return userRepositories.findByUsername(user.getUsername());
     }
 
 

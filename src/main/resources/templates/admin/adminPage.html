@@ -12,10 +12,10 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid d-flex justify-content-between">
         <div class="d-flex">
-            <h3><span id="UserNameEnter" class="text-white" th:text="${userEnter.getUsername()}"
+            <h3><span id="UserNameEnter" class="text-white"
                       style="font-weight: bold;"></span></h3>
             <h3><span class="text-white" style="display: inline">&nbsp;with roles:&nbsp;</span></h3>
-            <h3> <span class="text-white" th:text="${userEnter.getRolesToString()}"
+            <h3> <span class="text-white"
                        style="display: inline;"></span></h3>
         </div>
 
@@ -24,8 +24,6 @@
         </form>
     </div>
 </nav>
-
-
 <div class="container-fluid">
     <div class="row">
 
@@ -43,8 +41,7 @@
                     <div class="tab-content" id="tabContent">
                         <ul class="nav nav-tabs">
                             <a id="btnOpenUsers" class="nav-link active" data-toggle="tab">Users Table</a>
-                            <a id="btnOpenNewUser" class="nav-link" data-toggle="tab" th:href="@{/admin/new}">New
-                                User</a>
+                            <a id="btnOpenNewUser" class="nav-link" data-toggle="tab">New User</a>
                         </ul>
                         <div id="cards" class="card">
                             <div class="card-header">
@@ -65,11 +62,12 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="someDefaultModal" tabindex="-1" role="dialog" aria-labelledby="someDefaultModalLabel"
-     aria-hidden="true">
+
+
+<!--скрытое Edit модальное окно -->
+<div class="modal fade" id="ModalEdit">
     <div class="modal-dialog">
         <div class="modal-content">
-
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -78,14 +76,38 @@
             </div>
 
             <div class="modal-body">
+                <form class="form-group" id="editUser">
+                    <label for="id" >ID</label>
+                    <input type="text" class="form-control" id="id" name="id" disabled><br>
+
+                    <label for="firstName">Name</label>
+                    <input class="form-control" type="text" id="firstName">
+
+                    <label for="lastName">Surname</label>
+                    <input class="form-control" type="text" id="lastName">
+
+                    <label for="email">Email</label>
+                    <input class="form-control" id="email" type="email">
+
+                    <label for="username">Username</label>
+                    <input class="form-control" id="username" type="text">
+
+                    <label for="password">password</label>
+                    <input class="form-control" id="password" type="password">
+                </form>
             </div>
 
-            <div class="modal-footer">
+            <div id="modal-footer" class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button class="btn btn-outline-success" id="editButton">Edit</button>
+                `
             </div>
 
         </div>
     </div>
 </div>
+
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
         crossorigin="anonymous">
@@ -98,10 +120,6 @@
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
         crossorigin="anonymous"></script>
 <script th:src="@{/js/adminPage.js}"></script>
-
-
 <!--<script th:src="@{../js/adminPage.js}"></script>-->
-
-
 </body>
 </html>

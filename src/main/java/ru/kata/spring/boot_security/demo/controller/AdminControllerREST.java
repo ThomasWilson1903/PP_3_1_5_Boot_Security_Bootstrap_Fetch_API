@@ -53,6 +53,11 @@ public class AdminControllerREST {
         return roleRepositories.findAll();
     }
 
+    @GetMapping("/profile")
+    public User getUserAuthorization(Principal principal) {
+        return userRepositories.findByUsername(principal.getName());
+    }
+
     @PostMapping("/save")
     public User saveNewUser(@RequestBody User user) {
         user.setPassword(customPasswordEncoder.encode(user.getPassword()));
@@ -66,22 +71,20 @@ public class AdminControllerREST {
     }
 
 
-   /* @PostMapping(value = "/edit/{id}")
-    public String updateUser(@ModelAttribute("user") @Valid User user, BindingResult bindingResult,
-                             @RequestParam(value = "roles") int[] selectResult) {
+    @PutMapping(value = "/edit/{id}")
+    public User updateUser(@RequestBody User user, BindingResult bindingResult) {
         if (!bindingResult.hasErrors()) {
             List<Role> roles = new ArrayList<>();
-            for (int s : selectResult) {
-                roles.add(roleRepositories.getReferenceById(s));
+            for (Role role : user.getRoles()) {
+                roles.add(roleRepositories.findById(role.getId()).orElse(null));
             }
             user.setRoles(roles);
-            user.setPassword(userRepositories.findByUsername(user.getUsername()).getPassword());
             userServices.saveUser(user);
         }
-        return "redirect:/admin/users";
-    }*/
+        return user;
+    }
 
-    @PostMapping("/del/{id}")
+    @DeleteMapping("/del/{id}")
     public String del(@PathVariable("id") int id) {
         userServices.deleteUser(id);
         return "redirect:/admin/users";

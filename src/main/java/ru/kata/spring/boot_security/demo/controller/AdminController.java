@@ -41,9 +41,6 @@ public class AdminController {
 
     @GetMapping("/users")
     public String show(Model model, Principal principal) {
-        model.addAttribute("users", userRepositories.findAll());
-        model.addAttribute("userEnter", userRepositories.findByUsername(principal.getName()));
-
         return "admin/adminPage";
     }
 

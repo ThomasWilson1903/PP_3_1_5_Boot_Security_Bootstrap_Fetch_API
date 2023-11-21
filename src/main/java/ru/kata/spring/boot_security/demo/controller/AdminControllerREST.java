@@ -87,6 +87,6 @@ public class AdminControllerREST {
     @DeleteMapping("/del/{id}")
     public String del(@PathVariable("id") int id) {
         userServices.deleteUser(id);
-        return "redirect:/admin/users";
+        return "del user " + id;
     }
 }

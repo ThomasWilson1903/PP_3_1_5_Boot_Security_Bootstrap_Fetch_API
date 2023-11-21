@@ -7,6 +7,7 @@ jQuery(async function () {
     await openAdminPage();
     await openUsersPage();
     await openNewUserPage();
+    await openModalDel();
 })
 
 const csrfToken = 'Idea-dd34861c=5fb43fc0-1b04-49e6-b284-b5dbbb6de4c9';
@@ -48,7 +49,7 @@ const Service = {
         headers: Service.head,
         body: JSON.stringify(user)
     }),
-    /*deleteUser: async (id) => await fetch(`rest/users/${id}`, {method: 'DELETE', headers: userFetchService.head})*/
+    deleteUser: async (id) => await fetch(`/rest/del/${id}`, {method: 'DELETE', headers: Service.head})
 }
 
 async function getTableWithUsers() {
@@ -94,16 +95,24 @@ async function getTableWithUsers() {
     // обрабатываем нажатие на любую из кнопок edit или delete
     // достаем из нее данные и отдаем модалке, которую к тому же открываем
     $("#mainTable").find('button').on('click', (event) => {
-        let defaultModal = $('#ModalEdit');
+        let EditModal = $('#ModalEdit');
+        let DelModal = $('#ModalDel');
 
         let targetButton = $(event.target);
         let buttonUserId = targetButton.attr('data-userid');
         let buttonAction = targetButton.attr('data-action');
 
-        defaultModal.attr('data-userid', buttonUserId);
-        defaultModal.attr('data-action', buttonAction);
-
-        defaultModal.modal('show');
+        EditModal.attr('data-userid', buttonUserId);
+        DelModal.attr('data-userid', buttonUserId);
+        console.log(buttonAction)
+        switch (buttonAction){
+            case 'edit':
+                EditModal.modal('show');
+                break;
+            case 'delete':
+                DelModal.modal('show')
+                break;
+        }
     })
 
 }
@@ -127,7 +136,6 @@ async function openModalEdit() {
         let modal = $('#ModalEdit')
         let id = modal.find("#id").val().trim();
         let username = modal.find("#username").val().trim();
-        let password = modal.find("#password").val().trim();
         let firstname = modal.find("#firstName").val().trim();
         let lastname = modal.find("#lastName").val().trim();
         let email = modal.find("#email").val().trim();
@@ -148,88 +156,48 @@ async function openModalEdit() {
             })
 
     })
-
-
 }
 
-/*$("#editButton").on('click', async () => {
-    let id = modal.find("#id").val().trim();
-    let login = modal.find("#login").val().trim();
-    let password = modal.find("#password").val().trim();
-    let age = modal.find("#age").val().trim();
-    let data = {
-        id: id,
-        login: login,
-        password: password,
-        age: age
-    }
-})*/
+async function openModalDel() {
+    $('#ModalDel').on("shown.bs.modal", async function () {
+        // Код, который будет выполняться при открытии модального окна
+        console.log("Модальное окно было открыто");
+        let userData = await Service.findOneUser($('#ModalDel').attr('data-userid'))
+            .then(res => res.json())
+            .then(user => {
+                console.log(user)
+                $('#id1').val(user.id);
+                $('#firstName1').val(user.firstName);
+                $('#lastName1').val(user.lastName);
+                $('#email1').val(user.email);
+                $('#username1').val(user.username);
+            })
+    });
+    $('#delButton').click(async function () {
+        let modal = $('#ModalDel')
+        let id = modal.find("#id1").val().trim();
+        let username = modal.find("#username1").val().trim();
+        let firstname = modal.find("#firstName1").val().trim();
+        let lastname = modal.find("#lastName1").val().trim();
+        let email = modal.find("#email1").val().trim();
 
+        let userData = await Service.findOneUser(id)
+            .then(res => res.json())
+            .then(async function (user){
+                user.username = username
+                user.firstName = firstname
+                user.lastName = lastname
+                user.email = email
+                console.log(user)
+                let response = await Service.deleteUser(user.id)
+                if(response.ok){
+                    getTableWithUsers()
+                    modal.modal('hide');
+                }
+            })
 
-// редактируем юзера из модалки редактирования, забираем данные, отправляем
-function editUser(modal, id) {
-    /*let preuser =  Service.findOneUser(id);
-    let user = preuser.json();*/
-
-    modal.find('.modal-title').html('Edit user');
-    modal.find('.modal-title').html('Edit user');
-
-
-    //let editButton = ;
-    /*let closeButton = `<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>`
-    modal.find('.modal-footer').append(`<button  class="btn btn-outline-success" id="editButton">Edit</button>`);*/
-    //modal.find('.modal-footer').append(closeButton);
-    /*
-         user.then(user => {
-             let bodyForm = `
-                 <form class="form-group" id="editUser">
-                     <input type="text" class="form-control" id="id" name="id" value="${user.id}" disabled><br>
-                     <input class="form-control" type="text" id="login" value="${user.username}">
-                     <br>
-                     <input class="form-control" type="password" id="password">
-                     <br>
-                     <input class="form-control" id="firstName" type="text" value="${user.firstName}">
-                     <br>
-                     <input class="form-control" id="username" type="text" value="${user.username}">
-                     <br>
-                     <input class="form-control" id="lastName" type="text" value="${user.lastName}">
-                     <br>
-                     <input class="form-control" id="email" type="email" value="${user.email}">
-                 </form>
-             `;
-             modal.find('.modal-body').append(bodyForm);
-         })*/
-
-    /*$("#editButton").on('click', async () => {
-        let id = modal.find("#id").val().trim();
-        let login = modal.find("#login").val().trim();
-        let password = modal.find("#password").val().trim();
-        let age = modal.find("#age").val().trim();
-        let data = {
-            id: id,
-            login: login,
-            password: password,
-            age: age
-        }
-        /!*const response = await Service.updateUser(data, id);
-
-        if (response.ok) {
-            getTableWithUsers();
-            modal.modal('hide');
-        } else {
-            let body = await response.json();
-            let alert = `<div class="alert alert-danger alert-dismissible fade show col-12" role="alert" id="sharaBaraMessageError">
-                            ${body.info}
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>`;
-            modal.find('.modal-body').prepend(alert);
-        }*!/
-    })*/
+    })
 }
-
-// удаляем юзера из модалки удаления
 async function deleteUser(modal, id) {
     //await Service.deleteUser(id);
     getTableWithUsers();

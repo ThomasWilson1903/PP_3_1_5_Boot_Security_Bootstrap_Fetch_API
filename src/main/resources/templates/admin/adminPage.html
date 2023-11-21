@@ -70,37 +70,66 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
             </div>
 
             <div class="modal-body">
                 <form class="form-group" id="editUser">
-                    <label for="id" >ID</label>
+                    <label for="id">ID</label>
                     <input type="text" class="form-control" id="id" name="id" disabled><br>
 
                     <label for="firstName">Name</label>
-                    <input class="form-control" type="text" id="firstName">
+                    <input class="form-control" type="text" id="firstName"><br>
 
                     <label for="lastName">Surname</label>
-                    <input class="form-control" type="text" id="lastName">
+                    <input class="form-control" type="text" id="lastName"><br>
 
                     <label for="email">Email</label>
-                    <input class="form-control" id="email" type="email">
+                    <input class="form-control" id="email" type="email"><br>
 
                     <label for="username">Username</label>
-                    <input class="form-control" id="username" type="text">
+                    <input class="form-control" id="username" type="text"><br>
 
-                    <label for="password">password</label>
-                    <input class="form-control" id="password" type="password">
                 </form>
             </div>
 
             <div id="modal-footer" class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 <button class="btn btn-outline-success" id="editButton">Edit</button>
-                `
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!--скрытое Del модальное окно -->
+<div class="modal fade" id="ModalDel">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Modal title</h5>
+            </div>
+
+            <div class="modal-body">
+                <form class="form-group" id="delUser">
+                    <label for="id">ID</label>
+                    <input type="text" class="form-control" id="id1" name="id" disabled><br>
+
+                    <label for="firstName">Name</label>
+                    <input class="form-control" type="text" id="firstName1" disabled><br>
+
+                    <label for="lastName">Surname</label>
+                    <input class="form-control" type="text" id="lastName1" disabled><br>
+
+                    <label for="email">Email</label>
+                    <input class="form-control" id="email1" type="email" disabled><br>
+
+                    <label for="username">Username</label>
+                    <input class="form-control" id="username1" type="text" disabled><br>
+
+                </form>
+            </div>
+
+            <div  class="modal-footer">
+                <button class="btn btn-outline-success" id="delButton">del</button>
             </div>
 
         </div>

@@ -16,19 +16,8 @@ import java.util.stream.Collectors;
 @RequestMapping("/user")
 public class UserController {
 
-    UserServices userServices;
-    UserRepositories userRepositories;
-
-    @Autowired
-    public UserController(UserServices userServices, UserRepositories userRepositories) {
-        this.userServices = userServices;
-        this.userRepositories = userRepositories;
-    }
-
     @GetMapping("/profile")
-    public String showId(Principal principal, Model model) {
-        model.addAttribute("users", userServices.getAllUsers());
-        model.addAttribute("userEnter", userRepositories.findByUsername(principal.getName()));
+    public String showId(Model model) {
         return "user/userPage";
     }
 

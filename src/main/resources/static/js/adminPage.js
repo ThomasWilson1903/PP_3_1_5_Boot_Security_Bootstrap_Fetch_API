@@ -8,24 +8,10 @@ jQuery(async function () {
     await openUsersPage();
     await openNewUserPage();
     await openModalDel();
+    await getEnterUser();
+
 })
 
-const csrfToken = 'Idea-dd34861c=5fb43fc0-1b04-49e6-b284-b5dbbb6de4c9';
-
-function getCookie(name) {
-    if (!document.cookie) {
-        return null;
-    }
-
-    const xsrfCookies = document.cookie.split(';')
-        .map(c => c.trim())
-        .filter(c => c.startsWith(name + '='));
-
-    if (xsrfCookies.length === 0) {
-        return null;
-    }
-    return decodeURIComponent(xsrfCookies[0].split('=')[1]);
-}
 
 const Service = {
     head: {
@@ -50,6 +36,23 @@ const Service = {
         body: JSON.stringify(user)
     }),
     deleteUser: async (id) => await fetch(`/rest/del/${id}`, {method: 'DELETE', headers: Service.head})
+}
+
+async function getEnterUser() {
+    await Service.findOneUserProfile()
+        .then(res => res.json())
+        .then(function (user){
+                console.log(user)
+                $('#UserEnter').empty().append(`
+             <h3><span class="text-white"
+                      style="font-weight: bold;">${user.username}</span></h3>
+            <h3><span class="text-white" style="display: inline">&nbsp;with roles:&nbsp;</span></h3>
+            <h3> <span class="text-white" 
+                       style="display: inline;">${user.rolesToString}</span></h3>
+                `)
+
+            }
+        )
 }
 
 async function getTableWithUsers() {
@@ -105,7 +108,7 @@ async function getTableWithUsers() {
         EditModal.attr('data-userid', buttonUserId);
         DelModal.attr('data-userid', buttonUserId);
         console.log(buttonAction)
-        switch (buttonAction){
+        switch (buttonAction) {
             case 'edit':
                 EditModal.modal('show');
                 break;
@@ -142,14 +145,14 @@ async function openModalEdit() {
 
         let userData = await Service.findOneUser(id)
             .then(res => res.json())
-            .then(async function (user){
+            .then(async function (user) {
                 user.username = username
                 user.firstName = firstname
                 user.lastName = lastname
                 user.email = email
                 console.log(user)
                 let response = await Service.updateUser(user, user.id)
-                if(response.ok){
+                if (response.ok) {
                     getTableWithUsers()
                     modal.modal('hide');
                 }
@@ -183,28 +186,20 @@ async function openModalDel() {
 
         let userData = await Service.findOneUser(id)
             .then(res => res.json())
-            .then(async function (user){
+            .then(async function (user) {
                 user.username = username
                 user.firstName = firstname
                 user.lastName = lastname
                 user.email = email
                 console.log(user)
                 let response = await Service.deleteUser(user.id)
-                if(response.ok){
+                if (response.ok) {
                     getTableWithUsers()
                     modal.modal('hide');
                 }
             })
 
     })
-}
-async function deleteUser(modal, id) {
-    //await Service.deleteUser(id);
-    getTableWithUsers();
-    modal.find('.modal-title').html('');
-    modal.find('.modal-body').html('User was deleted');
-    let closeButton = `<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>`
-    modal.find('.modal-footer').append(closeButton);
 }
 
 

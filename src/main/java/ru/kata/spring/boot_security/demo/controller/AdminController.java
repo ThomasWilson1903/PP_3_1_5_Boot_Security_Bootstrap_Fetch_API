@@ -21,95 +21,10 @@ import java.util.List;
 @RequestMapping("/admin")
 public class AdminController {
 
-    private UserServices userServices;
-    private PasswordEncoder customPasswordEncoder;
-    private RoleRepositories roleRepositories;
-
-    private UserRepositories userRepositories;
-
-    @Autowired
-    public AdminController(UserServices userServices,
-                           PasswordEncoder customPasswordEncoder,
-                           RoleRepositories roleRepositories,
-                           UserRepositories userRepositories) {
-        this.userServices = userServices;
-        this.customPasswordEncoder = customPasswordEncoder;
-        this.roleRepositories = roleRepositories;
-        this.userRepositories = userRepositories;
-    }
-
-
     @GetMapping("/users")
     public String show(Model model, Principal principal) {
         return "admin/adminPage";
     }
-
-    //profile
-    /*
-    @GetMapping("/profile")
-    public String showUserProfile(Model model, Principal principal) {
-        model.addAttribute("users", userServices.getAllUsers());
-        model.addAttribute("userEnter", userRepositories.findByUsername(principal.getName()));
-        return "user/userPage";
-    }
-
-    @GetMapping("/new")
-    public String newUser(Model model, Principal principal) {
-        model.addAttribute("newUser", new User());
-        List<Role> roles = roleRepositories.findAll();
-        model.addAttribute("allRoles", roles);
-        model.addAttribute("userEnter", userRepositories.findByUsername(principal.getName()));
-
-        return "admin/newUser";
-    }
-
-    @GetMapping("/save")
-    public String saveUser(@ModelAttribute("user") @Valid User user, BindingResult bindingResult,
-                           Principal principal, Model model) {
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("newUser", user);
-            List<Role> roles = roleRepositories.findAll();
-            model.addAttribute("allRoles", roles);
-            model.addAttribute("errors", bindingResult.getFieldErrors());
-            model.addAttribute("userEnter", userRepositories.findByUsername(principal.getName()));
-            return "admin/newUser";
-        }
-        user.setPassword(customPasswordEncoder.encode(user.getPassword()));
-        userServices.saveUser(user);
-
-
-        return "redirect:/admin/users";
-    }
-
-    *//*@PatchMapping("/edit/{id}")
-    public String editUser(@PathVariable("id") int userId, Model model) {
-        model.addAttribute("newUser", userServices.getUser(userId));
-
-        List<Role> roles = roleRepositories.findAll();
-        model.addAttribute("allRoles", roles);
-        return "redirect:/admin/users";
-    }*//*
-
-    @PostMapping(value = "/edit/{id}")
-    public String updateUser(@ModelAttribute("user") @Valid User user, BindingResult bindingResult,
-                             @RequestParam(value = "roles") int[] selectResult) {
-        if (!bindingResult.hasErrors()) {
-            List<Role> roles = new ArrayList<>();
-            for (int s : selectResult) {
-                roles.add(roleRepositories.getReferenceById(s));
-            }
-            user.setRoles(roles);
-            user.setPassword(userRepositories.findByUsername(user.getUsername()).getPassword());
-            userServices.saveUser(user);
-        }
-        return "redirect:/admin/users";
-    }
-
-    @PostMapping("/del/{id}")
-    public String del(@PathVariable("id") int id) {
-        userServices.deleteUser(id);
-        return "redirect:/admin/users";
-    }*/
 }
 
 
